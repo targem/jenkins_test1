@@ -11,38 +11,19 @@ pipeline {
         echo '"getting stuff"'
       }
     }
-    stage('build_pc') {
+    stage('buildJu') {
       steps {
-        parallel(
-          "build_pc": {
-            timeout(unit: 'MINUTES', time: 6) {
-              isUnix()
-              sh 'echo "it is unix"'
-            }
-            
-            
-          },
-          "build_linux": {
-            echo 'building linux'
-            
-          },
-          "build mac": {
-            echo 'building mac'
-            
+        script {
+          agent {
+            label "docker"
+            docker { image 'registry.targem.ru/node6:latest' }
+            reuseNode true
           }
-        )
-      }
-    }
-    stage('deploy') {
-      steps {
-        timeout(time: 30) {
-          node(label: 'versions') {
-            dir(path: '${versions_path}')
+          steps {
+            sh 'pwd; ls -alF; hostname'
           }
-          
         }
         
-        echo 'deploing all'
       }
     }
   }
